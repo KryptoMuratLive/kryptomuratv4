@@ -331,6 +331,231 @@ async def get_admin_stats():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# Livepeer Streaming Routes
+@api_router.post("/streams/create")
+async def create_stream(stream_request: StreamRequest, creator_wallet: str):
+    """Create a new Livepeer stream"""
+    try:
+        # Create stream in Livepeer
+        livepeer_payload = {
+            "name": stream_request.name,
+            "profiles": [
+                {
+                    "name": "720p",
+                    "bitrate": 3000000,
+                    "fps": 30,
+                    "width": 1280,
+                    "height": 720
+                },
+                {
+                    "name": "480p", 
+                    "bitrate": 1500000,
+                    "fps": 30,
+                    "width": 854,
+                    "height": 480
+                },
+                {
+                    "name": "360p",
+                    "bitrate": 800000,
+                    "fps": 30,
+                    "width": 640,
+                    "height": 360
+                }
+            ]
+        }
+        
+        headers = {
+            "Authorization": f"Bearer {LIVEPEER_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        
+        import requests
+        response = requests.post(
+            f"{LIVEPEER_BASE_URL}/stream",
+            json=livepeer_payload,
+            headers=headers
+        )
+        
+        if response.status_code != 201:
+            raise HTTPException(status_code=500, detail=f"Livepeer stream creation failed: {response.text}")
+        
+        livepeer_stream = response.json()
+        
+        # Create our stream record
+        stream_data = StreamResponse(
+            id=livepeer_stream["id"],
+            name=stream_request.name,
+            description=stream_request.description,
+            stream_key=livepeer_stream["streamKey"],
+            playback_id=livepeer_stream["playbackId"],
+            nft_required=stream_request.nft_required,
+            creator_wallet=creator_wallet
+        )
+        
+        # Save to database
+        await db.live_streams.insert_one(stream_data.dict())
+        
+        return stream_data
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/streams")
+async def get_streams():
+    """Get all available streams"""
+    try:
+        streams = await db.live_streams.find({}).to_list(100)
+        return [StreamResponse(**stream) for stream in streams]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/streams/{stream_id}")
+async def get_stream(stream_id: str):
+    """Get stream by ID"""
+    try:
+        stream = await db.live_streams.find_one({"id": stream_id})
+        if not stream:
+            raise HTTPException(status_code=404, detail="Stream not found")
+        return StreamResponse(**stream)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/streams/{stream_id}/access")
+async def verify_stream_access(stream_id: str, wallet_address: str):
+    """Verify access to a stream based on NFT ownership"""
+    try:
+        # Get stream info
+        stream = await db.live_streams.find_one({"id": stream_id})
+        if not stream:
+            raise HTTPException(status_code=404, detail="Stream not found")
+        
+        # If NFT is not required, grant access
+        if not stream.get("nft_required", True):
+            return StreamAccess(
+                wallet_address=wallet_address,
+                stream_id=stream_id,
+                access_granted=True,
+                access_level="viewer"
+            )
+        
+        # Check NFT ownership (using existing NFT check logic)
+        nft_access = await check_nft_access(wallet_address)
+        
+        if not nft_access.has_access:
+            raise HTTPException(status_code=403, detail="NFT ownership required for stream access")
+        
+        # Store access record
+        access_record = StreamAccess(
+            wallet_address=wallet_address,
+            stream_id=stream_id,
+            access_granted=True,
+            access_level=nft_access.access_level
+        )
+        
+        await db.stream_access.insert_one(access_record.dict())
+        
+        return access_record
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/streams/{stream_id}/playback/{wallet_address}")
+async def get_stream_playback(stream_id: str, wallet_address: str):
+    """Get playback URL for verified users"""
+    try:
+        # Verify access first
+        access = await verify_stream_access(stream_id, wallet_address)
+        
+        if not access.access_granted:
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Get stream info
+        stream = await db.live_streams.find_one({"id": stream_id})
+        if not stream:
+            raise HTTPException(status_code=404, detail="Stream not found")
+        
+        # Return playback URLs
+        playback_id = stream["playback_id"]
+        
+        return {
+            "playback_id": playback_id,
+            "hls_url": f"https://cdn.livepeer.com/hls/{playback_id}/index.m3u8",
+            "webrtc_url": f"https://cdn.livepeer.com/webrtc/{playback_id}",
+            "access_level": access.access_level
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/streams/{stream_id}")
+async def delete_stream(stream_id: str, creator_wallet: str):
+    """Delete a stream (only creator can delete)"""
+    try:
+        # Check if user is creator
+        stream = await db.live_streams.find_one({"id": stream_id})
+        if not stream:
+            raise HTTPException(status_code=404, detail="Stream not found")
+        
+        if stream["creator_wallet"] != creator_wallet:
+            raise HTTPException(status_code=403, detail="Only stream creator can delete")
+        
+        # Delete from Livepeer
+        headers = {
+            "Authorization": f"Bearer {LIVEPEER_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        
+        import requests
+        response = requests.delete(
+            f"{LIVEPEER_BASE_URL}/stream/{stream_id}",
+            headers=headers
+        )
+        
+        # Delete from our database
+        await db.live_streams.delete_one({"id": stream_id})
+        await db.stream_access.delete_many({"stream_id": stream_id})
+        
+        return {"success": True, "message": "Stream deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/streams/{stream_id}/viewers")
+async def get_stream_viewers(stream_id: str):
+    """Get current viewers for a stream"""
+    try:
+        # Get viewer count from access records
+        viewers = await db.stream_access.find({"stream_id": stream_id}).to_list(1000)
+        
+        # Get stream info from Livepeer (for live stats)
+        headers = {
+            "Authorization": f"Bearer {LIVEPEER_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        
+        import requests
+        response = requests.get(
+            f"{LIVEPEER_BASE_URL}/stream/{stream_id}",
+            headers=headers
+        )
+        
+        livepeer_stats = response.json() if response.status_code == 200 else {}
+        
+        return {
+            "total_viewers": len(viewers),
+            "current_viewers": livepeer_stats.get("isActive", 0),
+            "stream_status": "live" if livepeer_stats.get("isActive") else "offline"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Original routes
 @api_router.get("/")
 async def root():
