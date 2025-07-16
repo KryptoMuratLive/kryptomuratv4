@@ -1,6 +1,6 @@
 {
   "summary": {
-    "passed": 8,
+    "passed": 13,
     "total": 13
   },
   "results": [
@@ -8,44 +8,48 @@
       "test": "API Root Endpoint",
       "success": true,
       "details": "Root endpoint accessible: KryptoMurat - Web3 Platform API",
-      "timestamp": "2025-07-16T16:31:00.476090",
+      "timestamp": "2025-07-16T16:34:37.915175",
       "response_data": {
         "message": "KryptoMurat - Web3 Platform API"
       }
     },
     {
       "test": "Wallet Connect",
-      "success": false,
-      "details": "HTTP 500",
-      "timestamp": "2025-07-16T16:31:00.525740",
+      "success": true,
+      "details": "Wallet connected successfully",
+      "timestamp": "2025-07-16T16:34:37.942303",
       "response_data": {
-        "detail": "type object 'Web3' has no attribute 'isAddress'"
+        "success": true,
+        "message": "Wallet connected successfully"
       }
     },
     {
       "test": "Wallet Balance",
-      "success": false,
-      "details": "HTTP 500",
-      "timestamp": "2025-07-16T16:31:31.748759",
+      "success": true,
+      "details": "Balance retrieved: 0.0 MURAT",
+      "timestamp": "2025-07-16T16:34:40.436026",
       "response_data": {
-        "detail": "Error fetching balance: type object 'Web3' has no attribute 'isAddress'"
+        "wallet_address": "0x742D35cC6634c0532925A3b8D0f48Bdf4b64fC44",
+        "balance": "0.0",
+        "symbol": "MURAT",
+        "decimals": 18
       }
     },
     {
       "test": "Staking Create",
       "success": true,
       "details": "Staking position created with APY: 4.0%",
-      "timestamp": "2025-07-16T16:31:57.162428",
+      "timestamp": "2025-07-16T16:35:09.094901",
       "response_data": {
         "success": true,
         "staking_position": {
-          "id": "b363391e-5bac-443b-a76f-2db5fec045a9",
+          "id": "b226e4fc-3cfc-4e52-9d49-51af6c5bac54",
           "wallet_address": "0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44",
           "amount": "1000",
           "duration_days": 90,
           "apy": 4.0,
-          "start_date": "2025-07-16T16:31:57.142961",
-          "end_date": "2025-10-14T16:31:57.142907",
+          "start_date": "2025-07-16T16:35:09.089011",
+          "end_date": "2025-10-14T16:35:09.088956",
           "status": "active"
         }
       }
@@ -53,44 +57,47 @@
     {
       "test": "Staking Positions",
       "success": true,
-      "details": "Retrieved 1 staking positions",
-      "timestamp": "2025-07-16T16:31:57.174380",
+      "details": "Retrieved 2 staking positions",
+      "timestamp": "2025-07-16T16:35:09.104991",
       "response_data": {
-        "count": 1
+        "count": 2
       }
     },
     {
       "test": "NFT Access",
-      "success": false,
-      "details": "HTTP 500",
-      "timestamp": "2025-07-16T16:32:16.977908",
+      "success": true,
+      "details": "NFT access denied, level: none, count: 0",
+      "timestamp": "2025-07-16T16:35:09.150542",
       "response_data": {
-        "detail": "('Address has an invalid EIP-55 checksum. After looking up the address from the original source, try again.', '0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44')"
+        "wallet_address": "0x742D35cC6634c0532925A3b8D0f48Bdf4b64fC44",
+        "has_access": false,
+        "nft_count": 0,
+        "access_level": "none"
       }
     },
     {
       "test": "AI Generate",
-      "success": false,
-      "details": "HTTP 500",
-      "timestamp": "2025-07-16T16:32:44.122535",
+      "success": true,
+      "details": "AI content generated: 126 characters",
+      "timestamp": "2025-07-16T16:35:09.212758",
       "response_data": {
-        "detail": "Failed to generate chat completion: litellm.AuthenticationError: AuthenticationError: OpenAIException - Incorrect API key provided: sk-proj-********************************************************************************************************************************************************XqkA. You can find your API key at https://platform.openai.com/account/api-keys."
+        "content_length": 126
       }
     },
     {
       "test": "Streams Create",
       "success": true,
-      "details": "Stream created with ID: 301891a1-2155-4d60-8c54-07f777a5da4e",
-      "timestamp": "2025-07-16T16:32:55.185316",
+      "details": "Stream created with ID: 8994574d-d01d-4afd-a71b-e1121e7e1be1",
+      "timestamp": "2025-07-16T16:35:09.937061",
       "response_data": {
-        "stream_id": "301891a1-2155-4d60-8c54-07f777a5da4e"
+        "stream_id": "8994574d-d01d-4afd-a71b-e1121e7e1be1"
       }
     },
     {
       "test": "Story Initialize",
       "success": true,
       "details": "Story initialized for wallet, current chapter: chapter_001",
-      "timestamp": "2025-07-16T16:32:55.208537",
+      "timestamp": "2025-07-16T16:35:09.946908",
       "response_data": {
         "id": "b800309f-9a40-4fc8-9eee-ac24b0489c6d",
         "wallet_address": "0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44",
@@ -100,14 +107,14 @@
         "reputation_score": 0,
         "items_collected": [],
         "story_path": "main",
-        "last_played": "2025-07-16T16:32:55.193006"
+        "last_played": "2025-07-16T16:32:55.193000"
       }
     },
     {
       "test": "Story Chapters",
       "success": true,
       "details": "Retrieved 4 story chapters",
-      "timestamp": "2025-07-16T16:32:55.262183",
+      "timestamp": "2025-07-16T16:35:11.259680",
       "response_data": {
         "count": 4
       }
@@ -115,18 +122,18 @@
     {
       "test": "Telegram Subscribe",
       "success": true,
-      "details": "Telegram subscription successful: Subscription created",
-      "timestamp": "2025-07-16T16:32:55.860032",
+      "details": "Telegram subscription successful: Subscription updated",
+      "timestamp": "2025-07-16T16:35:11.268353",
       "response_data": {
         "success": true,
-        "message": "Subscription created"
+        "message": "Subscription updated"
       }
     },
     {
       "test": "Telegram Stats",
       "success": true,
       "details": "Stats retrieved: 1 subscribers, 0 messages",
-      "timestamp": "2025-07-16T16:32:55.871701",
+      "timestamp": "2025-07-16T16:35:11.278069",
       "response_data": {
         "total_subscribers": 1,
         "total_messages": 0,
@@ -141,11 +148,11 @@
     },
     {
       "test": "Error Handling",
-      "success": false,
-      "details": "2/4 error handling tests passed",
-      "timestamp": "2025-07-16T16:32:56.128557",
+      "success": true,
+      "details": "3/4 error handling tests passed",
+      "timestamp": "2025-07-16T16:35:11.432322",
       "response_data": null
     }
   ],
-  "timestamp": "2025-07-16T16:32:56.128741"
+  "timestamp": "2025-07-16T16:35:11.432498"
 }
