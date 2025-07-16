@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Script for Livepeer Streaming Endpoints
-Tests the newly added Livepeer streaming functionality
+Comprehensive Backend API Testing Script for KryptoMurat Platform
+Tests all backend API endpoints including wallet, staking, NFT, AI, streaming, story, and telegram functionality
 """
 
 import requests
 import json
 import sys
 from datetime import datetime
+import uuid
 
 # Configuration
 BACKEND_URL = "https://6377e35b-dba9-41f9-aca9-160d136727f4.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
-TEST_WALLET = "0x742D35cC6634c0532925A3b8D0f48Bdf4b64fC44"
-LIVEPEER_API_KEY = "0b8aedbd-2eca-494c-a5fd-2e5b3770b382"
+TEST_WALLET = "0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44"
 
 class BackendTester:
     def __init__(self):
