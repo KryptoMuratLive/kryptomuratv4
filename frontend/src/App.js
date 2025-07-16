@@ -2,6 +2,13 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import axios from "axios";
 import ReactHlsPlayer from 'react-hls-player';
+import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
+
+// Legal Components
+import Impressum from './components/Impressum';
+import AGB from './components/AGB';
+import Datenschutz from './components/Datenschutz';
+import Nutzungsbedingungen from './components/Nutzungsbedingungen';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
