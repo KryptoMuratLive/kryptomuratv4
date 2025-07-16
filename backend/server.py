@@ -1036,6 +1036,314 @@ Stil: Action-reich, deutsch, Bitcoin-Jäger auf Motorrad, Herford-Umgebung, span
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# Telegram Bot Routes
+@api_router.post("/telegram/subscribe")
+async def subscribe_telegram(subscription_data: dict):
+    """Subscribe to Telegram notifications"""
+    try:
+        wallet_address = subscription_data.get("wallet_address")
+        chat_id = subscription_data.get("chat_id")
+        username = subscription_data.get("username", "")
+        
+        if not wallet_address or not chat_id:
+            raise HTTPException(status_code=400, detail="wallet_address and chat_id required")
+        
+        # Check if subscription exists
+        existing = await db.telegram_subscriptions.find_one({
+            "wallet_address": wallet_address,
+            "chat_id": chat_id
+        })
+        
+        if existing:
+            # Update existing subscription
+            await db.telegram_subscriptions.update_one(
+                {"_id": existing["_id"]},
+                {"$set": {
+                    "is_active": True,
+                    "username": username,
+                    "updated_at": datetime.utcnow()
+                }}
+            )
+            return {"success": True, "message": "Subscription updated"}
+        else:
+            # Create new subscription
+            subscription = TelegramSubscription(
+                wallet_address=wallet_address,
+                chat_id=chat_id,
+                username=username
+            )
+            
+            await db.telegram_subscriptions.insert_one(subscription.dict())
+            
+            # Send welcome message
+            welcome_msg = f"""
+*🎮 Willkommen bei KryptoMurat\\!*
+
+Du erhältst jetzt Notifications für:
+• 🎲 Story\\-Updates \\(Jagd auf den Bitcoin\\)
+• 💰 Staking\\-Alerts \\(Rewards & Erinnerungen\\)
+• 🎥 Live\\-Stream Notifications
+• 🎭 NFT\\-Alerts \\(Neue Drops\\)
+• 🤖 AI\\-Content Updates
+
+Verwende /help für alle Befehle\\!
+            """
+            
+            await send_telegram_notification(chat_id, welcome_msg)
+            
+            return {"success": True, "message": "Subscription created"}
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/telegram/unsubscribe")
+async def unsubscribe_telegram(unsubscribe_data: dict):
+    """Unsubscribe from Telegram notifications"""
+    try:
+        wallet_address = unsubscribe_data.get("wallet_address")
+        chat_id = unsubscribe_data.get("chat_id")
+        
+        if not wallet_address or not chat_id:
+            raise HTTPException(status_code=400, detail="wallet_address and chat_id required")
+        
+        result = await db.telegram_subscriptions.update_one(
+            {"wallet_address": wallet_address, "chat_id": chat_id},
+            {"$set": {"is_active": False}}
+        )
+        
+        if result.modified_count > 0:
+            return {"success": True, "message": "Unsubscribed successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Subscription not found")
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/telegram/notify")
+async def send_notification(notification_data: dict):
+    """Send notification to subscribers"""
+    try:
+        notification_type = notification_data.get("type")
+        message = notification_data.get("message")
+        wallet_address = notification_data.get("wallet_address")
+        
+        if not notification_type or not message:
+            raise HTTPException(status_code=400, detail="type and message required")
+        
+        # Get subscribers
+        query = {"is_active": True}
+        if wallet_address:
+            query["wallet_address"] = wallet_address
+        
+        subscribers = await db.telegram_subscriptions.find(query).to_list(1000)
+        
+        sent_count = 0
+        for subscriber in subscribers:
+            notifications = subscriber.get("notifications", {})
+            
+            # Check if user wants this type of notification
+            if notifications.get(notification_type, True):
+                success = await send_telegram_notification(
+                    subscriber["chat_id"], 
+                    message
+                )
+                if success:
+                    sent_count += 1
+        
+        return {"success": True, "sent_to": sent_count}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/telegram/webhook/{secret}")
+async def telegram_webhook(secret: str, request: Request):
+    """Handle Telegram webhook"""
+    if secret != WEBHOOK_SECRET:
+        raise HTTPException(status_code=403, detail="Invalid webhook secret")
+    
+    try:
+        from telegram import Update
+        update_data = await request.json()
+        update = Update.de_json(update_data, telegram_bot)
+        
+        if update.message:
+            await handle_telegram_message(update.message)
+        
+        return {"status": "ok"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def handle_telegram_message(message):
+    """Handle incoming Telegram messages"""
+    try:
+        chat_id = message.chat_id
+        text = message.text
+        username = message.from_user.username if message.from_user else ""
+        
+        # Log message
+        await db.telegram_messages.insert_one({
+            "chat_id": chat_id,
+            "message": text,
+            "username": username,
+            "timestamp": datetime.utcnow(),
+            "direction": "incoming"
+        })
+        
+        # Handle commands
+        if text.startswith('/start'):
+            welcome_text = """
+*🎮 KryptoMurat Telegram Bot*
+
+Befehle:
+/help \\- Zeigt diese Hilfe
+/status \\- Zeigt deinen Account\\-Status
+/subscribe \\- Aktiviert Notifications
+/unsubscribe \\- Deaktiviert Notifications
+/wallet \\- Wallet\\-Informationen
+
+Verbinde deine Wallet auf kryptomur\\.at um loszulegen\\!
+            """
+            await send_telegram_notification(chat_id, welcome_text)
+            
+        elif text.startswith('/help'):
+            help_text = """
+*🎮 KryptoMurat Bot Hilfe*
+
+*Verfügbare Befehle:*
+/start \\- Bot starten
+/status \\- Account\\-Status prüfen
+/subscribe \\- Notifications aktivieren
+/unsubscribe \\- Notifications deaktivieren
+/wallet \\- Wallet\\-Info anzeigen
+
+*Notification\\-Typen:*
+• 🎲 Story\\-Updates
+• 💰 Staking\\-Alerts
+• 🎥 Stream\\-Notifications
+• 🎭 NFT\\-Alerts
+• 🤖 AI\\-Content
+
+Support: @moneyclitch
+            """
+            await send_telegram_notification(chat_id, help_text)
+            
+        elif text.startswith('/status'):
+            # Get user subscription
+            subscription = await db.telegram_subscriptions.find_one({
+                "chat_id": chat_id,
+                "is_active": True
+            })
+            
+            if subscription:
+                wallet_address = subscription["wallet_address"]
+                
+                # Get user stats
+                progress = await db.story_progress.find_one({"wallet_address": wallet_address})
+                staking_positions = await db.staking_positions.find({"wallet_address": wallet_address}).to_list(100)
+                
+                status_text = f"""
+*📊 Dein KryptoMurat Status*
+
+*Wallet:* `{wallet_address[:8]}...{wallet_address[-4:]}`
+*Story\\-Fortschritt:* {len(progress.get('completed_chapters', [])) if progress else 0} Kapitel
+*Staking\\-Positionen:* {len(staking_positions)} aktiv
+*Notifications:* ✅ Aktiviert
+
+*Reputation:* {progress.get('reputation_score', 0) if progress else 0}
+*Story\\-Pfad:* {progress.get('story_path', 'main') if progress else 'main'}
+                """
+                await send_telegram_notification(chat_id, status_text)
+            else:
+                await send_telegram_notification(chat_id, "❌ Kein aktives Abonnement gefunden\\. Verwende /subscribe auf der Website\\!")
+                
+        elif text.startswith('/wallet'):
+            subscription = await db.telegram_subscriptions.find_one({
+                "chat_id": chat_id,
+                "is_active": True
+            })
+            
+            if subscription:
+                wallet_address = subscription["wallet_address"]
+                
+                # Get token balance
+                try:
+                    contract = web3.eth.contract(address=MURAT_TOKEN_ADDRESS, abi=ERC20_ABI)
+                    balance_wei = contract.functions.balanceOf(wallet_address).call()
+                    decimals = contract.functions.decimals().call()
+                    balance = balance_wei / (10 ** decimals)
+                    
+                    wallet_text = f"""
+*💰 Wallet\\-Info*
+
+*Adresse:* `{wallet_address}`
+*MURAT Balance:* {balance:.2f} MURAT
+*Netzwerk:* Polygon
+
+[Polygonscan](https://polygonscan\\.com/address/{wallet_address})
+                    """
+                    await send_telegram_notification(chat_id, wallet_text)
+                    
+                except Exception as e:
+                    await send_telegram_notification(chat_id, f"❌ Fehler beim Abrufen der Wallet\\-Daten: {str(e)}")
+            else:
+                await send_telegram_notification(chat_id, "❌ Kein aktives Abonnement gefunden\\!")
+        
+        # Send auto-notifications for specific actions
+        await send_auto_notifications(chat_id, text)
+        
+    except Exception as e:
+        print(f"Error handling Telegram message: {e}")
+
+async def send_auto_notifications(chat_id: int, text: str):
+    """Send automatic notifications based on user actions"""
+    try:
+        # Story completion notification
+        if "story completed" in text.lower():
+            notification = "🎉 Glückwunsch\\! Du hast ein neues Kapitel abgeschlossen\\!"
+            await send_telegram_notification(chat_id, notification)
+        
+        # Staking notification
+        elif "staking" in text.lower():
+            notification = "💰 Staking\\-Position wurde aktualisiert\\!"
+            await send_telegram_notification(chat_id, notification)
+            
+    except Exception as e:
+        print(f"Auto-notification error: {e}")
+
+@api_router.get("/telegram/stats")
+async def get_telegram_stats():
+    """Get Telegram bot statistics"""
+    try:
+        total_subscribers = await db.telegram_subscriptions.count_documents({"is_active": True})
+        total_messages = await db.telegram_messages.count_documents({})
+        
+        # Get subscription breakdown
+        subscriptions = await db.telegram_subscriptions.find({"is_active": True}).to_list(1000)
+        
+        notification_stats = {
+            "story_updates": 0,
+            "staking_alerts": 0,
+            "stream_notifications": 0,
+            "nft_alerts": 0,
+            "ai_content": 0
+        }
+        
+        for sub in subscriptions:
+            notifications = sub.get("notifications", {})
+            for key in notification_stats.keys():
+                if notifications.get(key, True):
+                    notification_stats[key] += 1
+        
+        return {
+            "total_subscribers": total_subscribers,
+            "total_messages": total_messages,
+            "notification_preferences": notification_stats
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Original routes
 @api_router.get("/")
 async def root():
