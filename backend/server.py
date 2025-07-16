@@ -598,6 +598,386 @@ async def get_stream_viewers(stream_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# Interactive Story Module Routes
+@api_router.post("/story/initialize")
+async def initialize_story(wallet_address: str):
+    """Initialize story for a new player"""
+    try:
+        # Check if player already has progress
+        existing_progress = await db.story_progress.find_one({"wallet_address": wallet_address})
+        if existing_progress:
+            return StoryProgress(**existing_progress)
+        
+        # Create initial story progress
+        initial_progress = StoryProgress(
+            wallet_address=wallet_address,
+            current_chapter="chapter_001",
+            story_path="main"
+        )
+        
+        await db.story_progress.insert_one(initial_progress.dict())
+        return initial_progress
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/story/chapters")
+async def get_all_chapters():
+    """Get all story chapters (public info only)"""
+    try:
+        chapters = await db.story_chapters.find({}).to_list(100)
+        # Remove sensitive info for public view
+        public_chapters = []
+        for chapter in chapters:
+            public_chapter = {
+                "id": chapter["id"],
+                "title": chapter["title"],
+                "description": chapter["description"],
+                "chapter_number": chapter["chapter_number"],
+                "nft_required": chapter["nft_required"],
+                "image_url": chapter.get("image_url", "")
+            }
+            public_chapters.append(public_chapter)
+        
+        return sorted(public_chapters, key=lambda x: x["chapter_number"])
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/story/chapter/{chapter_id}")
+async def get_chapter(chapter_id: str, wallet_address: str):
+    """Get specific chapter content with access control"""
+    try:
+        # Get chapter
+        chapter = await db.story_chapters.find_one({"id": chapter_id})
+        if not chapter:
+            raise HTTPException(status_code=404, detail="Chapter not found")
+        
+        # Check NFT access if required
+        if chapter.get("nft_required", False):
+            nft_access = await check_nft_access(wallet_address)
+            if not nft_access.has_access:
+                raise HTTPException(status_code=403, detail="NFT ownership required for this chapter")
+        
+        # Get player progress
+        progress = await db.story_progress.find_one({"wallet_address": wallet_address})
+        if not progress:
+            # Initialize if not exists
+            await initialize_story(wallet_address)
+            progress = await db.story_progress.find_one({"wallet_address": wallet_address})
+        
+        # Check if chapter is unlocked
+        if chapter_id not in progress.get("completed_chapters", []) and chapter_id != progress.get("current_chapter"):
+            # Check unlock requirements
+            unlock_reqs = chapter.get("unlock_requirements", {})
+            if unlock_reqs:
+                required_chapters = unlock_reqs.get("completed_chapters", [])
+                if not all(req in progress.get("completed_chapters", []) for req in required_chapters):
+                    raise HTTPException(status_code=403, detail="Chapter not unlocked yet")
+        
+        return StoryChapter(**chapter)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/story/choice")
+async def make_story_choice(choice_data: dict):
+    """Make a choice in the story"""
+    try:
+        wallet_address = choice_data.get("wallet_address")
+        chapter_id = choice_data.get("chapter_id")
+        choice_index = choice_data.get("choice_index")
+        
+        if not all([wallet_address, chapter_id, choice_index is not None]):
+            raise HTTPException(status_code=400, detail="Missing required fields")
+        
+        # Get chapter
+        chapter = await db.story_chapters.find_one({"id": chapter_id})
+        if not chapter:
+            raise HTTPException(status_code=404, detail="Chapter not found")
+        
+        # Validate choice
+        choices = chapter.get("choices", [])
+        if choice_index >= len(choices):
+            raise HTTPException(status_code=400, detail="Invalid choice index")
+        
+        chosen_option = choices[choice_index]
+        
+        # Record choice
+        story_choice = StoryChoice(
+            chapter_id=chapter_id,
+            wallet_address=wallet_address,
+            choice_index=choice_index,
+            choice_text=chosen_option["text"],
+            consequence=chosen_option.get("consequence", ""),
+            reputation_change=chosen_option.get("reputation_change", 0)
+        )
+        
+        await db.story_choices.insert_one(story_choice.dict())
+        
+        # Update progress
+        progress = await db.story_progress.find_one({"wallet_address": wallet_address})
+        if progress:
+            # Add to completed chapters
+            completed = progress.get("completed_chapters", [])
+            if chapter_id not in completed:
+                completed.append(chapter_id)
+            
+            # Update reputation
+            new_reputation = progress.get("reputation_score", 0) + chosen_option.get("reputation_change", 0)
+            
+            # Add choice to history
+            choices_made = progress.get("choices_made", [])
+            choices_made.append({
+                "chapter_id": chapter_id,
+                "choice_index": choice_index,
+                "choice_text": chosen_option["text"],
+                "timestamp": datetime.utcnow().isoformat()
+            })
+            
+            # Determine next chapter
+            next_chapter = chosen_option.get("next_chapter", "")
+            if not next_chapter and chapter.get("next_chapters"):
+                next_chapter = chapter["next_chapters"][0]  # Default to first option
+            
+            # Update story path based on choices
+            story_path = progress.get("story_path", "main")
+            if chosen_option.get("story_path"):
+                story_path = chosen_option["story_path"]
+            
+            await db.story_progress.update_one(
+                {"wallet_address": wallet_address},
+                {"$set": {
+                    "completed_chapters": completed,
+                    "current_chapter": next_chapter,
+                    "reputation_score": new_reputation,
+                    "choices_made": choices_made,
+                    "story_path": story_path,
+                    "last_played": datetime.utcnow()
+                }}
+            )
+        
+        # Generate AI consequence if needed
+        if chosen_option.get("generate_ai_consequence"):
+            try:
+                chat = LlmChat(
+                    api_key=OPENAI_API_KEY,
+                    session_id=f"story_{wallet_address}",
+                    system_message="Du bist ein Geschichtenerzähler für die Bitcoin-Jagd. Erstelle dramatische Konsequenzen für Spieler-Entscheidungen im Comic-Stil."
+                ).with_model("openai", "gpt-4o")
+                
+                consequence_prompt = f"Der Bitcoin-Jäger hat sich entschieden: '{chosen_option['text']}'. Beschreibe die dramatischen Konsequenzen dieser Entscheidung in 2-3 Sätzen. Action-reich, deutsch, mit Motorrad-Szenen."
+                
+                user_message = UserMessage(text=consequence_prompt)
+                ai_consequence = await chat.send_message(user_message)
+                
+                # Update choice with AI consequence
+                await db.story_choices.update_one(
+                    {"id": story_choice.id},
+                    {"$set": {"consequence": ai_consequence}}
+                )
+                
+                story_choice.consequence = ai_consequence
+                
+            except Exception as e:
+                print(f"AI consequence generation failed: {e}")
+        
+        return {
+            "success": True,
+            "choice": story_choice,
+            "next_chapter": next_chapter,
+            "reputation_change": chosen_option.get("reputation_change", 0)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/story/progress/{wallet_address}")
+async def get_story_progress(wallet_address: str):
+    """Get player's story progress"""
+    try:
+        progress = await db.story_progress.find_one({"wallet_address": wallet_address})
+        if not progress:
+            # Initialize if not exists
+            return await initialize_story(wallet_address)
+        
+        return StoryProgress(**progress)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/story/vote")
+async def vote_story_direction(vote_data: dict):
+    """Vote for story direction (community voting)"""
+    try:
+        wallet_address = vote_data.get("wallet_address")
+        vote_type = vote_data.get("vote_type")
+        vote_option = vote_data.get("vote_option")
+        
+        if not all([wallet_address, vote_type, vote_option]):
+            raise HTTPException(status_code=400, detail="Missing required fields")
+        
+        # Check if user already voted
+        existing_vote = await db.story_votes.find_one({
+            "wallet_address": wallet_address,
+            "vote_type": vote_type
+        })
+        
+        if existing_vote:
+            # Update existing vote
+            await db.story_votes.update_one(
+                {"_id": existing_vote["_id"]},
+                {"$set": {
+                    "vote_option": vote_option,
+                    "timestamp": datetime.utcnow()
+                }}
+            )
+        else:
+            # Create new vote
+            nft_access = await check_nft_access(wallet_address)
+            vote_weight = 2 if nft_access.has_access else 1  # NFT holders get more weight
+            
+            story_vote = StoryVote(
+                wallet_address=wallet_address,
+                vote_type=vote_type,
+                vote_option=vote_option,
+                vote_weight=vote_weight
+            )
+            
+            await db.story_votes.insert_one(story_vote.dict())
+        
+        return {"success": True, "message": "Vote recorded"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/story/votes/{vote_type}")
+async def get_vote_results(vote_type: str):
+    """Get voting results for a specific vote type"""
+    try:
+        votes = await db.story_votes.find({"vote_type": vote_type}).to_list(1000)
+        
+        # Count votes by option
+        vote_counts = {}
+        for vote in votes:
+            option = vote["vote_option"]
+            weight = vote.get("vote_weight", 1)
+            vote_counts[option] = vote_counts.get(option, 0) + weight
+        
+        # Sort by vote count
+        sorted_results = sorted(vote_counts.items(), key=lambda x: x[1], reverse=True)
+        
+        return {
+            "vote_type": vote_type,
+            "results": sorted_results,
+            "total_votes": len(votes),
+            "total_weight": sum(vote_counts.values())
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/story/generate-chapter")
+async def generate_ai_chapter(chapter_request: dict):
+    """Generate a new chapter using AI (admin only)"""
+    try:
+        wallet_address = chapter_request.get("wallet_address")
+        prompt = chapter_request.get("prompt")
+        chapter_number = chapter_request.get("chapter_number")
+        
+        if not all([wallet_address, prompt, chapter_number]):
+            raise HTTPException(status_code=400, detail="Missing required fields")
+        
+        # Check admin access (simple check - in production use proper admin auth)
+        nft_access = await check_nft_access(wallet_address)
+        if not nft_access.has_access or nft_access.access_level != "premium":
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        # Generate chapter with AI
+        chat = LlmChat(
+            api_key=OPENAI_API_KEY,
+            session_id=f"chapter_gen_{wallet_address}",
+            system_message="Du bist ein Autor für die Bitcoin-Jagd Story. Erstelle spannende Kapitel mit Entscheidungsmöglichkeiten im Comic-Stil. Deutsche Sprache, Action-reich, mit Motorrad-Szenen rund um Herford."
+        ).with_model("openai", "gpt-4o")
+        
+        chapter_prompt = f"""Erstelle ein neues Kapitel für die Bitcoin-Jagd Story:
+
+Kapitel Nummer: {chapter_number}
+Story-Prompt: {prompt}
+
+Format:
+TITEL: [Kapitel-Titel]
+BESCHREIBUNG: [Kurze Beschreibung]
+INHALT: [Haupt-Story Text, 3-4 Absätze]
+ENTSCHEIDUNGEN:
+1. [Option 1] -> [Konsequenz]
+2. [Option 2] -> [Konsequenz]
+3. [Option 3] -> [Konsequenz]
+
+Stil: Action-reich, deutsch, Bitcoin-Jäger auf Motorrad, Herford-Umgebung, spannend"""
+        
+        user_message = UserMessage(text=chapter_prompt)
+        ai_chapter = await chat.send_message(user_message)
+        
+        # Parse AI response (simplified parsing)
+        lines = ai_chapter.split('\n')
+        title = ""
+        description = ""
+        content = ""
+        choices = []
+        
+        current_section = ""
+        for line in lines:
+            line = line.strip()
+            if line.startswith("TITEL:"):
+                title = line.replace("TITEL:", "").strip()
+            elif line.startswith("BESCHREIBUNG:"):
+                description = line.replace("BESCHREIBUNG:", "").strip()
+            elif line.startswith("INHALT:"):
+                current_section = "content"
+                content = line.replace("INHALT:", "").strip()
+            elif line.startswith("ENTSCHEIDUNGEN:"):
+                current_section = "choices"
+            elif current_section == "content" and line and not line.startswith("ENTSCHEIDUNGEN:"):
+                content += "\n" + line
+            elif current_section == "choices" and line and (line.startswith("1.") or line.startswith("2.") or line.startswith("3.")):
+                choice_text = line.split("->")[0].strip()
+                consequence = line.split("->")[1].strip() if "->" in line else ""
+                choices.append({
+                    "text": choice_text,
+                    "consequence": consequence,
+                    "reputation_change": 0,
+                    "next_chapter": "",
+                    "story_path": "main"
+                })
+        
+        # Create chapter
+        new_chapter = StoryChapter(
+            title=title or f"Kapitel {chapter_number}",
+            description=description or "Ein neues Abenteuer beginnt...",
+            content=content,
+            chapter_number=chapter_number,
+            choices=choices,
+            nft_required=False
+        )
+        
+        await db.story_chapters.insert_one(new_chapter.dict())
+        
+        return {
+            "success": True,
+            "chapter": new_chapter,
+            "ai_raw": ai_chapter
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Original routes
 @api_router.get("/")
 async def root():
