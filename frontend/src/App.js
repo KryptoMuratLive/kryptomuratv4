@@ -510,9 +510,15 @@ const App = () => {
                 </div>
                 
                 <div className="bg-black/30 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
-                  <div className="text-3xl mb-4">🎭</div>
-                  <h3 className="text-xl font-semibold text-white mb-2">NFT Access</h3>
-                  <p className="text-gray-400">Erhalte Zugang zu exklusiven Inhalten und Premium-Features</p>
+                  <div className="text-3xl mb-4">🎥</div>
+                  <h3 className="text-xl font-semibold text-white mb-2">Live Streaming</h3>
+                  <p className="text-gray-400">Schaue exklusive Streams und erstelle eigene Inhalte</p>
+                </div>
+                
+                <div className="bg-black/30 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
+                  <div className="text-3xl mb-4">🤖</div>
+                  <h3 className="text-xl font-semibold text-white mb-2">AI Content</h3>
+                  <p className="text-gray-400">Generiere Memes, Comics und Stories mit KI-Unterstützung</p>
                 </div>
                 
                 <div className="bg-black/30 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
