@@ -613,8 +613,8 @@ const App = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-4 md:py-8">
         {!isConnected ? (
-          /* Landing Page */
-          <div className="text-center py-20">
+          /* Mobile-Optimized Landing Page */
+          <div className="text-center py-10 md:py-20">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-5xl font-bold text-white mb-6 leading-tight">
                 Willkommen bei<br/>
