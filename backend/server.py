@@ -81,6 +81,28 @@ class AIContentResponse(BaseModel):
     session_id: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
+class StreamRequest(BaseModel):
+    name: str
+    description: str = ""
+    nft_required: bool = True
+
+class StreamResponse(BaseModel):
+    id: str
+    name: str
+    description: str
+    stream_key: str
+    playback_id: str
+    is_active: bool = True
+    nft_required: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    creator_wallet: str
+
+class StreamAccess(BaseModel):
+    wallet_address: str
+    stream_id: str
+    access_granted: bool
+    access_level: str = "viewer"  # viewer, streamer, admin
+
 # ERC-20 Token ABI (simplified for balance check)
 ERC20_ABI = [
     {
