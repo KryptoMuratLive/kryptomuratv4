@@ -103,6 +103,48 @@ class StreamAccess(BaseModel):
     access_granted: bool
     access_level: str = "viewer"  # viewer, streamer, admin
 
+class StoryChapter(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    description: str
+    content: str
+    chapter_number: int
+    image_url: str = ""
+    nft_required: bool = False
+    choices: List[dict] = []
+    next_chapters: List[str] = []
+    unlock_requirements: dict = {}
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class StoryProgress(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    wallet_address: str
+    current_chapter: str
+    completed_chapters: List[str] = []
+    choices_made: List[dict] = []
+    reputation_score: int = 0
+    items_collected: List[str] = []
+    story_path: str = "main"  # main, heroic, mysterious, action
+    last_played: datetime = Field(default_factory=datetime.utcnow)
+
+class StoryChoice(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    chapter_id: str
+    wallet_address: str
+    choice_index: int
+    choice_text: str
+    consequence: str = ""
+    reputation_change: int = 0
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+class StoryVote(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    wallet_address: str
+    vote_type: str  # next_chapter, story_direction, character_fate
+    vote_option: str
+    vote_weight: int = 1  # NFT holders get higher weight
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
 # ERC-20 Token ABI (simplified for balance check)
 ERC20_ABI = [
     {
