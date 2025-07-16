@@ -309,7 +309,7 @@ async def generate_ai_content(request: AIContentRequest):
         chat = LlmChat(
             api_key=OPENAI_API_KEY,
             session_id=request.session_id,
-            system_message="Du bist ein kreativer AI-Assistent für die 'Jagd auf den Bitcoin' Plattform. Erstelle deutschen Content mit Humor und Meme-Vibes."
+            system_message="Du bist ein kreativer AI-Assistent für die KryptoMurat-Plattform. Erstelle deutschen Content mit Humor und Meme-Vibes für das Spiel 'Jagd auf den Bitcoin'."
         ).with_model("openai", "gpt-4o")
         
         # Create user message based on content type
