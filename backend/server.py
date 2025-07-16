@@ -13,6 +13,9 @@ from web3 import Web3
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 import asyncio
 import json
+from telegram import Bot
+from telegram.constants import ParseMode
+import httpx
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
