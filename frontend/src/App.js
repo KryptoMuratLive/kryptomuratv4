@@ -653,10 +653,10 @@ const App = () => {
                   <p className="text-sm md:text-base text-gray-400">Spiele das epische Adventure-Game und folge dem Bitcoin-Jäger</p>
                 </div>
                 
-                <div className="bg-black/30 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
-                  <div className="text-3xl mb-4">🎭</div>
-                  <h3 className="text-xl font-semibold text-white mb-2">NFT Access</h3>
-                  <p className="text-gray-400">Erhalte Zugang zu exklusiven Inhalten und Premium-Features</p>
+                <div className="bg-black/30 backdrop-blur-lg rounded-xl p-4 md:p-6 border border-purple-500/20">
+                  <div className="text-2xl md:text-3xl mb-2 md:mb-4">🎭</div>
+                  <h3 className="text-lg md:text-xl font-semibold text-white mb-2">NFT Access</h3>
+                  <p className="text-sm md:text-base text-gray-400">Erhalte Zugang zu exklusiven Inhalten und Premium-Features</p>
                 </div>
               </div>
               
