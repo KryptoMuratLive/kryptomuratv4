@@ -177,6 +177,57 @@ ERC20_ABI = [
     }
 ]
 
+# Initialize Telegram Bot
+telegram_bot = Bot(token=TELEGRAM_TOKEN)
+
+# Telegram helper functions
+def escape_markdown_v2(text: str) -> str:
+    """Escape special characters for MarkdownV2"""
+    special_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+    for char in special_chars:
+        text = text.replace(char, f'\\{char}')
+    return text
+
+async def send_telegram_notification(chat_id: int, message: str, parse_mode: str = "MarkdownV2"):
+    """Send notification to Telegram"""
+    try:
+        if parse_mode == "MarkdownV2":
+            message = escape_markdown_v2(message)
+        
+        await telegram_bot.send_message(
+            chat_id=chat_id,
+            text=message,
+            parse_mode=parse_mode
+        )
+        
+        # Log to database
+        await db.telegram_messages.insert_one({
+            "chat_id": chat_id,
+            "message": message,
+            "timestamp": datetime.utcnow(),
+            "status": "sent"
+        })
+        
+        return True
+    except Exception as e:
+        print(f"Telegram notification error: {e}")
+        return False
+
+class TelegramSubscription(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    wallet_address: str
+    chat_id: int
+    username: str = ""
+    notifications: dict = {
+        "story_updates": True,
+        "staking_alerts": True,
+        "stream_notifications": True,
+        "nft_alerts": True,
+        "ai_content": True
+    }
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    is_active: bool = True
+
 # Web3 and Wallet Routes
 @api_router.post("/wallet/connect")
 async def connect_wallet(wallet_data: WalletConnect):
