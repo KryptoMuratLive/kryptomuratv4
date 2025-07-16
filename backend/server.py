@@ -248,7 +248,7 @@ async def connect_wallet(wallet_data: WalletConnect):
 async def get_token_balance(wallet_address: str):
     """Get MURAT token balance"""
     try:
-        if not Web3.isAddress(wallet_address):
+        if not Web3.is_address(wallet_address):
             raise HTTPException(status_code=400, detail="Invalid wallet address")
         
         # Create contract instance
