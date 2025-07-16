@@ -54,6 +54,12 @@ const MainApp = () => {
   const [showStoryChoice, setShowStoryChoice] = useState(false);
   const [storyVoteResults, setStoryVoteResults] = useState({});
   const [storyError, setStoryError] = useState("");
+  
+  // Telegram states
+  const [telegramChatId, setTelegramChatId] = useState("");
+  const [telegramSubscribed, setTelegramSubscribed] = useState(false);
+  const [telegramLoading, setTelegramLoading] = useState(false);
+  const [telegramError, setTelegramError] = useState("");
 
   // Mobile detection
   useEffect(() => {
