@@ -24,6 +24,11 @@ const App = () => {
   const [aiPrompt, setAiPrompt] = useState("");
   const [contentType, setContentType] = useState("meme");
   
+  // Mobile states
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [swipeStartX, setSwipeStartX] = useState(0);
+  
   // Streaming states
   const [streams, setStreams] = useState([]);
   const [currentStream, setCurrentStream] = useState(null);
@@ -42,6 +47,41 @@ const App = () => {
   const [showStoryChoice, setShowStoryChoice] = useState(false);
   const [storyVoteResults, setStoryVoteResults] = useState({});
   const [storyError, setStoryError] = useState("");
+
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Touch handlers for swipe navigation
+  const handleTouchStart = (e) => {
+    setSwipeStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e) => {
+    const swipeEndX = e.changedTouches[0].clientX;
+    const swipeDistance = swipeStartX - swipeEndX;
+    
+    if (Math.abs(swipeDistance) > 50) {
+      const tabs = ['dashboard', 'story', 'staking', 'streaming', 'ai', 'nft'];
+      const currentIndex = tabs.indexOf(activeTab);
+      
+      if (swipeDistance > 0 && currentIndex < tabs.length - 1) {
+        // Swipe left - next tab
+        setActiveTab(tabs[currentIndex + 1]);
+      } else if (swipeDistance < 0 && currentIndex > 0) {
+        // Swipe right - previous tab
+        setActiveTab(tabs[currentIndex - 1]);
+      }
+    }
+  };
 
   // Web3 Setup
   useEffect(() => {
