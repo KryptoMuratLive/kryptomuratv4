@@ -36,6 +36,10 @@ web3 = Web3(Web3.HTTPProvider(POLYGON_RPC_URL))
 # OpenAI Configuration
 OPENAI_API_KEY = "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"
 
+# Livepeer Configuration
+LIVEPEER_API_KEY = "0b8aedbd-2eca-494c-a5fd-2e5b3770b382"
+LIVEPEER_BASE_URL = "https://livepeer.com/api"
+
 # Define Models
 class WalletConnect(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
