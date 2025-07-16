@@ -177,6 +177,133 @@ const App = () => {
     }
   };
 
+  // Streaming functions
+  const loadStreams = async () => {
+    try {
+      const response = await axios.get(`${API}/streams`);
+      setStreams(response.data);
+      
+      // Load viewer counts for each stream
+      const viewerCounts = {};
+      for (const stream of response.data) {
+        try {
+          const viewerResponse = await axios.get(`${API}/streams/${stream.id}/viewers`);
+          viewerCounts[stream.id] = viewerResponse.data.total_viewers;
+        } catch (error) {
+          console.error('Error loading viewer count:', error);
+        }
+      }
+      setStreamViewers(viewerCounts);
+    } catch (error) {
+      console.error('Error loading streams:', error);
+    }
+  };
+
+  const createStream = async () => {
+    if (!streamName || !walletAddress) {
+      alert('Bitte gib einen Stream-Namen ein und verbinde deine Wallet.');
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const response = await axios.post(`${API}/streams/create?creator_wallet=${walletAddress}`, {
+        name: streamName,
+        description: streamDescription,
+        nft_required: nftRequired
+      });
+      
+      alert(`Stream erstellt!\nStream Key: ${response.data.stream_key}\nPlayback ID: ${response.data.playback_id}`);
+      setStreamName("");
+      setStreamDescription("");
+      await loadStreams();
+    } catch (error) {
+      console.error('Error creating stream:', error);
+      alert('Fehler beim Erstellen des Streams: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const watchStream = async (streamId) => {
+    if (!walletAddress) {
+      alert('Bitte verbinde deine Wallet um den Stream zu schauen.');
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      setStreamError("");
+      
+      // Get stream info
+      const streamResponse = await axios.get(`${API}/streams/${streamId}`);
+      const stream = streamResponse.data;
+      setCurrentStream(stream);
+      
+      // Get playback URL
+      const playbackResponse = await axios.get(`${API}/streams/${streamId}/playback/${walletAddress}`);
+      setStreamUrl(playbackResponse.data.hls_url);
+      
+    } catch (error) {
+      console.error('Error watching stream:', error);
+      setStreamError(error.response?.data?.detail || 'Fehler beim Laden des Streams');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteStream = async (streamId) => {
+    if (!confirm('Bist du sicher, dass du diesen Stream löschen möchtest?')) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      await axios.delete(`${API}/streams/${streamId}?creator_wallet=${walletAddress}`);
+      alert('Stream erfolgreich gelöscht!');
+      await loadStreams();
+      
+      // Close stream if it's currently playing
+      if (currentStream && currentStream.id === streamId) {
+        setCurrentStream(null);
+        setStreamUrl("");
+      }
+    } catch (error) {
+      console.error('Error deleting stream:', error);
+      alert('Fehler beim Löschen des Streams: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load streams when component mounts
+  useEffect(() => {
+    loadStreams();
+  }, []);
+
+  const generateAIContent_old = async () => {
+    if (!aiPrompt) {
+      alert('Bitte gib einen Prompt ein.');
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const response = await axios.post(`${API}/ai/generate`, {
+        prompt: aiPrompt,
+        content_type: contentType
+      });
+      
+      setAiContent(response.data.content);
+      setAiPrompt("");
+    } catch (error) {
+      console.error('Error generating AI content:', error);
+      alert('Fehler beim Generieren des AI-Contents: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const formatAddress = (address) => {
     return address ? `${address.substring(0, 6)}...${address.substring(address.length - 4)}` : '';
   };
