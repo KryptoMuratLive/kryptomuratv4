@@ -288,7 +288,132 @@ const App = () => {
   // Load streams when component mounts
   useEffect(() => {
     loadStreams();
+    loadStoryProgress();
   }, []);
+
+  // Story functions
+  const loadStoryProgress = async () => {
+    if (!walletAddress) return;
+    
+    try {
+      const response = await axios.get(`${API}/story/progress/${walletAddress}`);
+      setStoryProgress(response.data);
+      
+      // Load current chapter
+      if (response.data.current_chapter) {
+        await loadChapter(response.data.current_chapter);
+      }
+      
+      // Load all chapters
+      const chaptersResponse = await axios.get(`${API}/story/chapters`);
+      setAllChapters(chaptersResponse.data);
+      
+    } catch (error) {
+      console.error('Error loading story progress:', error);
+    }
+  };
+
+  const loadChapter = async (chapterId) => {
+    if (!walletAddress) return;
+    
+    try {
+      setStoryLoading(true);
+      setStoryError("");
+      
+      const response = await axios.get(`${API}/story/chapter/${chapterId}?wallet_address=${walletAddress}`);
+      setCurrentChapter(response.data);
+      setShowStoryChoice(true);
+      
+    } catch (error) {
+      console.error('Error loading chapter:', error);
+      setStoryError(error.response?.data?.detail || 'Fehler beim Laden des Kapitels');
+    } finally {
+      setStoryLoading(false);
+    }
+  };
+
+  const makeStoryChoice = async (choiceIndex) => {
+    if (!walletAddress || !currentChapter) return;
+    
+    try {
+      setStoryLoading(true);
+      
+      const response = await axios.post(`${API}/story/choice`, {
+        wallet_address: walletAddress,
+        chapter_id: currentChapter.id,
+        choice_index: choiceIndex
+      });
+      
+      // Show consequence
+      if (response.data.choice.consequence) {
+        alert(`Konsequenz: ${response.data.choice.consequence}`);
+      }
+      
+      // Update reputation
+      if (response.data.reputation_change !== 0) {
+        const change = response.data.reputation_change > 0 ? '+' : '';
+        alert(`Reputation: ${change}${response.data.reputation_change}`);
+      }
+      
+      setShowStoryChoice(false);
+      
+      // Load next chapter if available
+      if (response.data.next_chapter) {
+        setTimeout(() => {
+          loadChapter(response.data.next_chapter);
+        }, 2000);
+      }
+      
+      // Refresh progress
+      await loadStoryProgress();
+      
+    } catch (error) {
+      console.error('Error making story choice:', error);
+      alert('Fehler bei der Wahl: ' + error.message);
+    } finally {
+      setStoryLoading(false);
+    }
+  };
+
+  const voteStoryDirection = async (voteType, voteOption) => {
+    if (!walletAddress) return;
+    
+    try {
+      await axios.post(`${API}/story/vote`, {
+        wallet_address: walletAddress,
+        vote_type: voteType,
+        vote_option: voteOption
+      });
+      
+      alert('Deine Stimme wurde gezählt!');
+      
+      // Refresh vote results
+      const voteResults = await axios.get(`${API}/story/votes/${voteType}`);
+      setStoryVoteResults(prev => ({
+        ...prev,
+        [voteType]: voteResults.data
+      }));
+      
+    } catch (error) {
+      console.error('Error voting:', error);
+      alert('Fehler beim Abstimmen: ' + error.message);
+    }
+  };
+
+  const startNewStory = async () => {
+    if (!walletAddress) return;
+    
+    try {
+      setStoryLoading(true);
+      await axios.post(`${API}/story/initialize?wallet_address=${walletAddress}`);
+      await loadStoryProgress();
+    } catch (error) {
+      console.error('Error starting story:', error);
+      alert('Fehler beim Starten der Story: ' + error.message);
+    } finally {
+      setStoryLoading(false);
+    }
+  };
 
   const generateAIContent_old = async () => {
     if (!aiPrompt) {
