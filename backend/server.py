@@ -904,7 +904,7 @@ async def generate_ai_chapter(chapter_request: dict):
             system_message="Du bist ein Autor für das KryptoMurat-Spiel 'Jagd auf den Bitcoin'. Erstelle spannende Kapitel mit Entscheidungsmöglichkeiten im Comic-Stil. Deutsche Sprache, Action-reich, mit Motorrad-Szenen rund um Herford."
         ).with_model("openai", "gpt-4o")
         
-        chapter_prompt = f"""Erstelle ein neues Kapitel für die Bitcoin-Jagd Story:
+        chapter_prompt = f"""Erstelle ein neues Kapitel für das KryptoMurat-Spiel 'Jagd auf den Bitcoin':
 
 Kapitel Nummer: {chapter_number}
 Story-Prompt: {prompt}
