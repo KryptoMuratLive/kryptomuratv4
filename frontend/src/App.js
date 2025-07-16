@@ -611,7 +611,7 @@ const App = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-4 md:py-8">
         {!isConnected ? (
           /* Landing Page */
           <div className="text-center py-20">
