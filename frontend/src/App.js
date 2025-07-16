@@ -33,6 +33,15 @@ const App = () => {
   const [streamDescription, setStreamDescription] = useState("");
   const [nftRequired, setNftRequired] = useState(true);
   const [streamViewers, setStreamViewers] = useState({});
+  
+  // Story states
+  const [storyProgress, setStoryProgress] = useState(null);
+  const [currentChapter, setCurrentChapter] = useState(null);
+  const [storyLoading, setStoryLoading] = useState(false);
+  const [allChapters, setAllChapters] = useState([]);
+  const [showStoryChoice, setShowStoryChoice] = useState(false);
+  const [storyVoteResults, setStoryVoteResults] = useState({});
+  const [storyError, setStoryError] = useState("");
 
   // Web3 Setup
   useEffect(() => {
