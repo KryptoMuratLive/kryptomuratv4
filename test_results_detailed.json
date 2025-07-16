@@ -1,0 +1,106 @@
+{
+  "summary": {
+    "passed": 5,
+    "total": 9
+  },
+  "results": [
+    {
+      "test": "API Root Endpoint",
+      "success": true,
+      "details": "Root endpoint accessible",
+      "timestamp": "2025-07-16T12:21:18.604914",
+      "response_data": {
+        "message": "Jagd auf den Bitcoin - Web3 Platform API"
+      }
+    },
+    {
+      "test": "Create Stream",
+      "success": true,
+      "details": "Stream created with ID: 4f74a87d-1833-44e6-befa-37a58bc3aa00",
+      "timestamp": "2025-07-16T12:21:36.248900",
+      "response_data": {
+        "id": "4f74a87d-1833-44e6-befa-37a58bc3aa00",
+        "name": "Test Bitcoin Hunt Stream",
+        "description": "Testing Livepeer integration for Bitcoin hunting platform",
+        "stream_key": "4f74-qea8-hm15-l2sp",
+        "playback_id": "4f742r8or1obhaj4",
+        "is_active": true,
+        "nft_required": true,
+        "created_at": "2025-07-16T12:21:36.230322",
+        "creator_wallet": "0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44"
+      }
+    },
+    {
+      "test": "Get All Streams",
+      "success": true,
+      "details": "Retrieved 1 streams",
+      "timestamp": "2025-07-16T12:21:36.261440",
+      "response_data": {
+        "count": 1
+      }
+    },
+    {
+      "test": "Get Specific Stream",
+      "success": true,
+      "details": "Retrieved stream 4f74a87d-1833-44e6-befa-37a58bc3aa00",
+      "timestamp": "2025-07-16T12:21:36.272981",
+      "response_data": {
+        "id": "4f74a87d-1833-44e6-befa-37a58bc3aa00",
+        "name": "Test Bitcoin Hunt Stream",
+        "description": "Testing Livepeer integration for Bitcoin hunting platform",
+        "stream_key": "4f74-qea8-hm15-l2sp",
+        "playback_id": "4f742r8or1obhaj4",
+        "is_active": true,
+        "nft_required": true,
+        "created_at": "2025-07-16T12:21:36.230000",
+        "creator_wallet": "0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44"
+      }
+    },
+    {
+      "test": "Verify Stream Access",
+      "success": false,
+      "details": "HTTP 500",
+      "timestamp": "2025-07-16T12:21:36.335892",
+      "response_data": {
+        "detail": "('Address has an invalid EIP-55 checksum. After looking up the address from the original source, try again.', '0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44')"
+      }
+    },
+    {
+      "test": "Get Playback URL",
+      "success": false,
+      "details": "HTTP 500",
+      "timestamp": "2025-07-16T12:21:36.346108",
+      "response_data": {
+        "detail": "('Address has an invalid EIP-55 checksum. After looking up the address from the original source, try again.', '0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44')"
+      }
+    },
+    {
+      "test": "Get Viewer Stats",
+      "success": true,
+      "details": "Viewer stats: 0 total, status: offline",
+      "timestamp": "2025-07-16T12:21:36.782519",
+      "response_data": {
+        "total_viewers": 0,
+        "current_viewers": false,
+        "stream_status": "offline"
+      }
+    },
+    {
+      "test": "NFT Access Control",
+      "success": false,
+      "details": "HTTP 500",
+      "timestamp": "2025-07-16T12:21:36.792621",
+      "response_data": {
+        "detail": "('Address has an invalid EIP-55 checksum. After looking up the address from the original source, try again.', '0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44')"
+      }
+    },
+    {
+      "test": "Error Handling",
+      "success": false,
+      "details": "2/3 error handling tests passed",
+      "timestamp": "2025-07-16T12:21:36.859016",
+      "response_data": null
+    }
+  ],
+  "timestamp": "2025-07-16T12:21:36.859200"
+}
