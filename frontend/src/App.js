@@ -491,16 +491,15 @@ const App = () => {
           <div className="text-center py-20">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-5xl font-bold text-white mb-6 leading-tight">
-                Willkommen zur epischen<br/>
+                Willkommen bei<br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-                  Jagd auf den Bitcoin
+                  KryptoMurat
                 </span>
               </h2>
               
               <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                Tauche ein in ein gamifiziertes Creator-Ökosystem mit NFTs, Token-Staking, 
-                Live-Streaming und KI-generierten Inhalten. Verfolge den Bitcoin-Jäger in einer 
-                interaktiven Story!
+                Die ultimative Web3-Plattform mit gamifizierten Creator-Ökosystem! Spiele "Jagd auf den Bitcoin", 
+                stake MURAT Token, streame live und generiere AI-Content. Alles mit NFT-Integration!
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
