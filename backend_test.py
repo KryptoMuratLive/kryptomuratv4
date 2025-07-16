@@ -12,7 +12,7 @@ from datetime import datetime
 # Configuration
 BACKEND_URL = "https://6377e35b-dba9-41f9-aca9-160d136727f4.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
-TEST_WALLET = "0x742d35cc6634c0532925a3b8d0f48bdf4b64fc44"
+TEST_WALLET = "0x742D35cC6634c0532925A3b8D0f48Bdf4b64fC44"
 LIVEPEER_API_KEY = "0b8aedbd-2eca-494c-a5fd-2e5b3770b382"
 
 class BackendTester:
