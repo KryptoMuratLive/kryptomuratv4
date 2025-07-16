@@ -516,9 +516,9 @@ const App = () => {
                 </div>
                 
                 <div className="bg-black/30 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
-                  <div className="text-3xl mb-4">🤖</div>
-                  <h3 className="text-xl font-semibold text-white mb-2">AI Content</h3>
-                  <p className="text-gray-400">Generiere Memes, Comics und Stories mit KI-Unterstützung</p>
+                  <div className="text-3xl mb-4">🎮</div>
+                  <h3 className="text-xl font-semibold text-white mb-2">Jagd auf den Bitcoin</h3>
+                  <p className="text-gray-400">Spiele das epische Adventure-Game und folge dem Bitcoin-Jäger</p>
                 </div>
               </div>
               
