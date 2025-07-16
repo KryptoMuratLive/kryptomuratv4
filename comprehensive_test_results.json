@@ -1,0 +1,151 @@
+{
+  "summary": {
+    "passed": 8,
+    "total": 13
+  },
+  "results": [
+    {
+      "test": "API Root Endpoint",
+      "success": true,
+      "details": "Root endpoint accessible: KryptoMurat - Web3 Platform API",
+      "timestamp": "2025-07-16T16:31:00.476090",
+      "response_data": {
+        "message": "KryptoMurat - Web3 Platform API"
+      }
+    },
+    {
+      "test": "Wallet Connect",
+      "success": false,
+      "details": "HTTP 500",
+      "timestamp": "2025-07-16T16:31:00.525740",
+      "response_data": {
+        "detail": "type object 'Web3' has no attribute 'isAddress'"
+      }
+    },
+    {
+      "test": "Wallet Balance",
+      "success": false,
+      "details": "HTTP 500",
+      "timestamp": "2025-07-16T16:31:31.748759",
+      "response_data": {
+        "detail": "Error fetching balance: type object 'Web3' has no attribute 'isAddress'"
+      }
+    },
+    {
+      "test": "Staking Create",
+      "success": true,
+      "details": "Staking position created with APY: 4.0%",
+      "timestamp": "2025-07-16T16:31:57.162428",
+      "response_data": {
+        "success": true,
+        "staking_position": {
+          "id": "b363391e-5bac-443b-a76f-2db5fec045a9",
+          "wallet_address": "0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44",
+          "amount": "1000",
+          "duration_days": 90,
+          "apy": 4.0,
+          "start_date": "2025-07-16T16:31:57.142961",
+          "end_date": "2025-10-14T16:31:57.142907",
+          "status": "active"
+        }
+      }
+    },
+    {
+      "test": "Staking Positions",
+      "success": true,
+      "details": "Retrieved 1 staking positions",
+      "timestamp": "2025-07-16T16:31:57.174380",
+      "response_data": {
+        "count": 1
+      }
+    },
+    {
+      "test": "NFT Access",
+      "success": false,
+      "details": "HTTP 500",
+      "timestamp": "2025-07-16T16:32:16.977908",
+      "response_data": {
+        "detail": "('Address has an invalid EIP-55 checksum. After looking up the address from the original source, try again.', '0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44')"
+      }
+    },
+    {
+      "test": "AI Generate",
+      "success": false,
+      "details": "HTTP 500",
+      "timestamp": "2025-07-16T16:32:44.122535",
+      "response_data": {
+        "detail": "Failed to generate chat completion: litellm.AuthenticationError: AuthenticationError: OpenAIException - Incorrect API key provided: sk-proj-********************************************************************************************************************************************************XqkA. You can find your API key at https://platform.openai.com/account/api-keys."
+      }
+    },
+    {
+      "test": "Streams Create",
+      "success": true,
+      "details": "Stream created with ID: 301891a1-2155-4d60-8c54-07f777a5da4e",
+      "timestamp": "2025-07-16T16:32:55.185316",
+      "response_data": {
+        "stream_id": "301891a1-2155-4d60-8c54-07f777a5da4e"
+      }
+    },
+    {
+      "test": "Story Initialize",
+      "success": true,
+      "details": "Story initialized for wallet, current chapter: chapter_001",
+      "timestamp": "2025-07-16T16:32:55.208537",
+      "response_data": {
+        "id": "b800309f-9a40-4fc8-9eee-ac24b0489c6d",
+        "wallet_address": "0x742d35Cc6634C0532925a3b8D0F48BDf4b64fC44",
+        "current_chapter": "chapter_001",
+        "completed_chapters": [],
+        "choices_made": [],
+        "reputation_score": 0,
+        "items_collected": [],
+        "story_path": "main",
+        "last_played": "2025-07-16T16:32:55.193006"
+      }
+    },
+    {
+      "test": "Story Chapters",
+      "success": true,
+      "details": "Retrieved 4 story chapters",
+      "timestamp": "2025-07-16T16:32:55.262183",
+      "response_data": {
+        "count": 4
+      }
+    },
+    {
+      "test": "Telegram Subscribe",
+      "success": true,
+      "details": "Telegram subscription successful: Subscription created",
+      "timestamp": "2025-07-16T16:32:55.860032",
+      "response_data": {
+        "success": true,
+        "message": "Subscription created"
+      }
+    },
+    {
+      "test": "Telegram Stats",
+      "success": true,
+      "details": "Stats retrieved: 1 subscribers, 0 messages",
+      "timestamp": "2025-07-16T16:32:55.871701",
+      "response_data": {
+        "total_subscribers": 1,
+        "total_messages": 0,
+        "notification_preferences": {
+          "story_updates": 1,
+          "staking_alerts": 1,
+          "stream_notifications": 1,
+          "nft_alerts": 1,
+          "ai_content": 1
+        }
+      }
+    },
+    {
+      "test": "Error Handling",
+      "success": false,
+      "details": "2/4 error handling tests passed",
+      "timestamp": "2025-07-16T16:32:56.128557",
+      "response_data": null
+    }
+  ],
+  "timestamp": "2025-07-16T16:32:56.128741"
+}
