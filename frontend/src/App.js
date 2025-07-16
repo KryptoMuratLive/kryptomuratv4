@@ -482,6 +482,174 @@ const App = () => {
                 )}
               </div>
             )}
+
+            {activeTab === 'streaming' && (
+              <div className="space-y-6">
+                {/* Stream Creation */}
+                <div className="bg-black/30 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
+                  <h3 className="text-xl font-semibold text-white mb-4">🎥 Live Stream erstellen</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">Stream Name</label>
+                      <input
+                        type="text"
+                        value={streamName}
+                        onChange={(e) => setStreamName(e.target.value)}
+                        placeholder="Bitcoin Jagd Live"
+                        className="w-full bg-black/40 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-purple-500 focus:outline-none"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">Beschreibung</label>
+                      <input
+                        type="text"
+                        value={streamDescription}
+                        onChange={(e) => setStreamDescription(e.target.value)}
+                        placeholder="Epische Bitcoin-Jagd Action!"
+                        className="w-full bg-black/40 border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-purple-500 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={nftRequired}
+                        onChange={(e) => setNftRequired(e.target.checked)}
+                        className="w-4 h-4 text-purple-600 bg-black/40 border-gray-600 rounded focus:ring-purple-500"
+                      />
+                      <span className="text-gray-400">NFT-Zugang erforderlich</span>
+                    </label>
+                  </div>
+                  
+                  <button
+                    onClick={createStream}
+                    disabled={loading || !streamName}
+                    className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 disabled:opacity-50"
+                  >
+                    {loading ? 'Erstelle Stream...' : 'Stream erstellen'}
+                  </button>
+                </div>
+                
+                {/* Stream List */}
+                <div className="bg-black/30 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
+                  <h3 className="text-xl font-semibold text-white mb-4">🔴 Live Streams</h3>
+                  
+                  {streams.length === 0 ? (
+                    <p className="text-gray-400">Keine Live Streams verfügbar.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {streams.map((stream) => (
+                        <div key={stream.id} className="bg-black/40 rounded-lg p-4 border border-gray-600">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2 mb-2">
+                                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                <h4 className="text-white font-semibold">{stream.name}</h4>
+                                {stream.nft_required && (
+                                  <span className="bg-purple-500/20 text-purple-400 px-2 py-1 rounded text-xs">
+                                    NFT Required
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-gray-400 text-sm mb-2">{stream.description}</p>
+                              <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                <span>Creator: {formatAddress(stream.creator_wallet)}</span>
+                                <span>Viewers: {streamViewers[stream.id] || 0}</span>
+                              </div>
+                            </div>
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => watchStream(stream.id)}
+                                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                              >
+                                Ansehen
+                              </button>
+                              {stream.creator_wallet === walletAddress && (
+                                <button
+                                  onClick={() => deleteStream(stream.id)}
+                                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                                >
+                                  Löschen
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Stream Player */}
+                {currentStream && (
+                  <div className="bg-black/30 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-xl font-semibold text-white">🎬 {currentStream.name}</h3>
+                      <button
+                        onClick={() => setCurrentStream(null)}
+                        className="text-gray-400 hover:text-white transition-colors"
+                      >
+                        ✕ Schließen
+                      </button>
+                    </div>
+                    
+                    {streamError ? (
+                      <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4">
+                        <p className="text-red-400">{streamError}</p>
+                      </div>
+                    ) : streamUrl ? (
+                      <div className="space-y-4">
+                        <div className="aspect-video bg-black rounded-lg overflow-hidden">
+                          <ReactHlsPlayer
+                            src={streamUrl}
+                            autoPlay
+                            controls
+                            width="100%"
+                            height="100%"
+                            className="w-full h-full"
+                            hlsConfig={{
+                              maxLoadingDelay: 4,
+                              maxBufferLength: 30,
+                              maxBufferSize: 60*1000*1000,
+                              maxBufferHole: 0.5,
+                            }}
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-2">
+                              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                              <span className="text-red-400 font-semibold">LIVE</span>
+                            </div>
+                            <span className="text-gray-400">Zuschauer: {streamViewers[currentStream.id] || 0}</span>
+                          </div>
+                          <div className="flex space-x-2">
+                            <button className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded text-sm">
+                              👍 Like
+                            </button>
+                            <button className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded text-sm">
+                              💬 Chat
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="text-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto mb-2"></div>
+                          <p className="text-gray-400">Lade Stream...</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </main>
