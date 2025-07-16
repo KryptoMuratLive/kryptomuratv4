@@ -406,6 +406,7 @@ const App = () => {
               {[
                 { id: 'dashboard', label: 'Dashboard', icon: '📊' },
                 { id: 'staking', label: 'Staking', icon: '🏦' },
+                { id: 'streaming', label: 'Live Streaming', icon: '🎥' },
                 { id: 'ai', label: 'AI Creator', icon: '🤖' },
                 { id: 'nft', label: 'NFT Access', icon: '🎭' }
               ].map(tab => (
