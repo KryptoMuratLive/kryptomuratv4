@@ -40,6 +40,10 @@ OPENAI_API_KEY = "sk-proj-ujdcR7I3xspThByTWBWpRLfatPE-A2RDvQp_gfIRrfGXpTGIb6qTNM
 LIVEPEER_API_KEY = "0b8aedbd-2eca-494c-a5fd-2e5b3770b382"
 LIVEPEER_BASE_URL = "https://livepeer.com/api"
 
+# Telegram Bot Configuration
+TELEGRAM_TOKEN = "7862770623:AAEmy3TgM_EK-RnSo1nYIg0H78JPJOvNjS0"
+WEBHOOK_SECRET = "kryptomurat_webhook_secret_2024"
+
 # Define Models
 class WalletConnect(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
