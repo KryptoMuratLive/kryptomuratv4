@@ -468,6 +468,72 @@ const MainApp = () => {
     }
   };
 
+  // Telegram functions
+  const subscribeTelegram = async () => {
+    if (!walletAddress || !telegramChatId) {
+      alert('Bitte Wallet verbinden und Chat ID eingeben');
+      return;
+    }
+    
+    try {
+      setTelegramLoading(true);
+      setTelegramError("");
+      
+      await axios.post(`${API}/telegram/subscribe`, {
+        wallet_address: walletAddress,
+        chat_id: parseInt(telegramChatId)
+      });
+      
+      setTelegramSubscribed(true);
+      alert('Erfolgreich für Telegram-Notifications angemeldet!');
+      
+    } catch (error) {
+      console.error('Error subscribing to Telegram:', error);
+      setTelegramError(error.response?.data?.detail || 'Fehler beim Anmelden');
+    } finally {
+      setTelegramLoading(false);
+    }
+  };
+
+  const unsubscribeTelegram = async () => {
+    if (!walletAddress || !telegramChatId) return;
+    
+    try {
+      setTelegramLoading(true);
+      
+      await axios.post(`${API}/telegram/unsubscribe`, {
+        wallet_address: walletAddress,
+        chat_id: parseInt(telegramChatId)
+      });
+      
+      setTelegramSubscribed(false);
+      alert('Erfolgreich von Telegram-Notifications abgemeldet!');
+      
+    } catch (error) {
+      console.error('Error unsubscribing from Telegram:', error);
+      alert('Fehler beim Abmelden: ' + error.message);
+    } finally {
+      setTelegramLoading(false);
+    }
+  };
+
+  const sendTestNotification = async () => {
+    if (!walletAddress) return;
+    
+    try {
+      await axios.post(`${API}/telegram/notify`, {
+        type: 'test',
+        message: `🧪 Test-Notification von KryptoMurat!\n\nWallet: ${walletAddress}\nZeit: ${new Date().toLocaleString('de-DE')}`,
+        wallet_address: walletAddress
+      });
+      
+      alert('Test-Notification gesendet!');
+    } catch (error) {
+      console.error('Error sending test notification:', error);
+      alert('Fehler beim Senden der Test-Notification: ' + error.message);
+    }
+  };
+
   const generateAIContent_old = async () => {
     if (!aiPrompt) {
       alert('Bitte gib einen Prompt ein.');
