@@ -539,6 +539,7 @@ const App = () => {
             <div className="flex space-x-4 mb-8">
               {[
                 { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+                { id: 'story', label: 'Bitcoin-Jagd', icon: '🎮' },
                 { id: 'staking', label: 'Staking', icon: '🏦' },
                 { id: 'streaming', label: 'Live Streaming', icon: '🎥' },
                 { id: 'ai', label: 'AI Creator', icon: '🤖' },
