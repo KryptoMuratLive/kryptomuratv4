@@ -17,7 +17,7 @@ const API = `${BACKEND_URL}/api`;
 const WALLETCONNECT_PROJECT_ID = "4d6552f8a5d85b900455fb644bab328e";
 const POLYGON_CHAIN_ID = 137;
 
-const App = () => {
+const MainApp = () => {
   const [walletAddress, setWalletAddress] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [tokenBalance, setTokenBalance] = useState("0");
