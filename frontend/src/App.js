@@ -629,10 +629,10 @@ const App = () => {
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12 px-4">
-                <div className="bg-black/30 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
-                  <div className="text-3xl mb-4">🪙</div>
-                  <h3 className="text-xl font-semibold text-white mb-2">MURAT Token</h3>
-                  <p className="text-gray-400">Stake deine Token für bis zu 8% APY mit verschiedenen Laufzeiten</p>
+                <div className="bg-black/30 backdrop-blur-lg rounded-xl p-4 md:p-6 border border-purple-500/20">
+                  <div className="text-2xl md:text-3xl mb-2 md:mb-4">🪙</div>
+                  <h3 className="text-lg md:text-xl font-semibold text-white mb-2">MURAT Token</h3>
+                  <p className="text-sm md:text-base text-gray-400">Stake deine Token für bis zu 8% APY mit verschiedenen Laufzeiten</p>
                 </div>
                 
                 <div className="bg-black/30 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
