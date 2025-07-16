@@ -765,7 +765,7 @@ async def make_story_choice(choice_data: dict):
                 chat = LlmChat(
                     api_key=OPENAI_API_KEY,
                     session_id=f"story_{wallet_address}",
-                    system_message="Du bist ein Geschichtenerzähler für die Bitcoin-Jagd. Erstelle dramatische Konsequenzen für Spieler-Entscheidungen im Comic-Stil."
+                    system_message="Du bist ein Geschichtenerzähler für das KryptoMurat-Spiel 'Jagd auf den Bitcoin'. Erstelle dramatische Konsequenzen für Spieler-Entscheidungen im Comic-Stil."
                 ).with_model("openai", "gpt-4o")
                 
                 consequence_prompt = f"Der Bitcoin-Jäger hat sich entschieden: '{chosen_option['text']}'. Beschreibe die dramatischen Konsequenzen dieser Entscheidung in 2-3 Sätzen. Action-reich, deutsch, mit Motorrad-Szenen."
