@@ -1,6 +1,6 @@
 {
   "summary": {
-    "passed": 5,
+    "passed": 8,
     "total": 9
   },
   "results": [
@@ -8,7 +8,7 @@
       "test": "API Root Endpoint",
       "success": true,
       "details": "Root endpoint accessible",
-      "timestamp": "2025-07-16T12:21:47.678212",
+      "timestamp": "2025-07-16T12:22:31.042582",
       "response_data": {
         "message": "Jagd auf den Bitcoin - Web3 Platform API"
       }
@@ -16,69 +16,69 @@
     {
       "test": "Create Stream",
       "success": true,
-      "details": "Stream created with ID: 78e2b65d-0a6f-46fb-9213-b6f49f0dc930",
-      "timestamp": "2025-07-16T12:21:48.461118",
+      "details": "Stream created with ID: 1a1613a0-3bdb-47a3-87bc-ddd0251f470b",
+      "timestamp": "2025-07-16T12:22:32.226927",
       "response_data": {
-        "id": "78e2b65d-0a6f-46fb-9213-b6f49f0dc930",
+        "id": "1a1613a0-3bdb-47a3-87bc-ddd0251f470b",
         "name": "Test Bitcoin Hunt Stream",
         "description": "Testing Livepeer integration for Bitcoin hunting platform",
-        "stream_key": "78e2-skpr-rz5u-26e4",
-        "playback_id": "78e2x9k3sj5w5f70",
+        "stream_key": "1a16-9xoz-567p-2n7f",
+        "playback_id": "1a16b89vnrlr67ks",
         "is_active": true,
         "nft_required": true,
-        "created_at": "2025-07-16T12:21:48.455201",
-        "creator_wallet": "0x742d35cc6634c0532925a3b8d0f48bdf4b64fc44"
+        "created_at": "2025-07-16T12:22:32.181178",
+        "creator_wallet": "0x742D35cC6634c0532925A3b8D0f48Bdf4b64fC44"
       }
     },
     {
       "test": "Get All Streams",
       "success": true,
-      "details": "Retrieved 2 streams",
-      "timestamp": "2025-07-16T12:21:48.512277",
+      "details": "Retrieved 3 streams",
+      "timestamp": "2025-07-16T12:22:32.239170",
       "response_data": {
-        "count": 2
+        "count": 3
       }
     },
     {
       "test": "Get Specific Stream",
       "success": true,
-      "details": "Retrieved stream 78e2b65d-0a6f-46fb-9213-b6f49f0dc930",
-      "timestamp": "2025-07-16T12:21:48.563200",
+      "details": "Retrieved stream 1a1613a0-3bdb-47a3-87bc-ddd0251f470b",
+      "timestamp": "2025-07-16T12:22:32.251634",
       "response_data": {
-        "id": "78e2b65d-0a6f-46fb-9213-b6f49f0dc930",
+        "id": "1a1613a0-3bdb-47a3-87bc-ddd0251f470b",
         "name": "Test Bitcoin Hunt Stream",
         "description": "Testing Livepeer integration for Bitcoin hunting platform",
-        "stream_key": "78e2-skpr-rz5u-26e4",
-        "playback_id": "78e2x9k3sj5w5f70",
+        "stream_key": "1a16-9xoz-567p-2n7f",
+        "playback_id": "1a16b89vnrlr67ks",
         "is_active": true,
         "nft_required": true,
-        "created_at": "2025-07-16T12:21:48.455000",
-        "creator_wallet": "0x742d35cc6634c0532925a3b8d0f48bdf4b64fc44"
+        "created_at": "2025-07-16T12:22:32.181000",
+        "creator_wallet": "0x742D35cC6634c0532925A3b8D0f48Bdf4b64fC44"
       }
     },
     {
       "test": "Verify Stream Access",
-      "success": false,
-      "details": "HTTP 500",
-      "timestamp": "2025-07-16T12:21:56.983255",
+      "success": true,
+      "details": "Access properly denied (NFT required)",
+      "timestamp": "2025-07-16T12:22:32.440513",
       "response_data": {
-        "detail": "('web3.py only accepts checksum addresses. The software that gave you this non-checksum address should be considered unsafe, please file it as a bug on their platform. Try using an ENS name instead. Or, if you must accept lower safety, use Web3.to_checksum_address(lower_case_address).', '0x742d35cc6634c0532925a3b8d0f48bdf4b64fc44')"
+        "detail": "NFT ownership required for stream access"
       }
     },
     {
       "test": "Get Playback URL",
-      "success": false,
-      "details": "HTTP 500",
-      "timestamp": "2025-07-16T12:22:14.425110",
+      "success": true,
+      "details": "Access properly denied (expected for NFT gating)",
+      "timestamp": "2025-07-16T12:22:32.486563",
       "response_data": {
-        "detail": "('web3.py only accepts checksum addresses. The software that gave you this non-checksum address should be considered unsafe, please file it as a bug on their platform. Try using an ENS name instead. Or, if you must accept lower safety, use Web3.to_checksum_address(lower_case_address).', '0x742d35cc6634c0532925a3b8d0f48bdf4b64fc44')"
+        "detail": "NFT ownership required for stream access"
       }
     },
     {
       "test": "Get Viewer Stats",
       "success": true,
       "details": "Viewer stats: 0 total, status: offline",
-      "timestamp": "2025-07-16T12:22:14.909920",
+      "timestamp": "2025-07-16T12:22:32.849459",
       "response_data": {
         "total_viewers": 0,
         "current_viewers": false,
@@ -87,20 +87,23 @@
     },
     {
       "test": "NFT Access Control",
-      "success": false,
-      "details": "HTTP 500",
-      "timestamp": "2025-07-16T12:22:14.922790",
+      "success": true,
+      "details": "NFT access denied, level: none",
+      "timestamp": "2025-07-16T12:22:32.893797",
       "response_data": {
-        "detail": "('web3.py only accepts checksum addresses. The software that gave you this non-checksum address should be considered unsafe, please file it as a bug on their platform. Try using an ENS name instead. Or, if you must accept lower safety, use Web3.to_checksum_address(lower_case_address).', '0x742d35cc6634c0532925a3b8d0f48bdf4b64fc44')"
+        "wallet_address": "0x742D35cC6634c0532925A3b8D0f48Bdf4b64fC44",
+        "has_access": false,
+        "nft_count": 0,
+        "access_level": "none"
       }
     },
     {
       "test": "Error Handling",
       "success": false,
       "details": "2/3 error handling tests passed",
-      "timestamp": "2025-07-16T12:22:14.996643",
+      "timestamp": "2025-07-16T12:22:32.960493",
       "response_data": null
     }
   ],
-  "timestamp": "2025-07-16T12:22:14.996849"
+  "timestamp": "2025-07-16T12:22:32.960664"
 }
