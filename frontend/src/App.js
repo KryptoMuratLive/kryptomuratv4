@@ -663,7 +663,7 @@ const App = () => {
               <button
                 onClick={connectWallet}
                 disabled={loading}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-xl text-lg md:text-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50"
               >
                 {loading ? 'Verbinde...' : 'Abenteuer Starten'}
               </button>
