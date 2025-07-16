@@ -457,7 +457,7 @@ const App = () => {
               <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
                 <span className="text-2xl font-bold text-black">₿</span>
               </div>
-              <h1 className="text-2xl font-bold text-white">Jagd auf den Bitcoin</h1>
+              <h1 className="text-2xl font-bold text-white">KryptoMurat</h1>
             </div>
             
             <div className="flex items-center space-x-4">
