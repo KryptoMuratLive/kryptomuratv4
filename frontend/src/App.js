@@ -670,7 +670,7 @@ const App = () => {
             </div>
           </div>
         ) : (
-          /* Dashboard */
+          /* Mobile-Optimized Dashboard */
           <div>
             {/* Tab Navigation */}
             <div className="flex space-x-4 mb-8">
