@@ -628,7 +628,7 @@ const App = () => {
                 stake MURAT Token, streame live und generiere AI-Content. Alles mit NFT-Integration!
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12 px-4">
                 <div className="bg-black/30 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
                   <div className="text-3xl mb-4">🪙</div>
                   <h3 className="text-xl font-semibold text-white mb-2">MURAT Token</h3>
