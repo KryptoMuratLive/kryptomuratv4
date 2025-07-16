@@ -23,6 +23,16 @@ const App = () => {
   const [stakeDuration, setStakeDuration] = useState(30);
   const [aiPrompt, setAiPrompt] = useState("");
   const [contentType, setContentType] = useState("meme");
+  
+  // Streaming states
+  const [streams, setStreams] = useState([]);
+  const [currentStream, setCurrentStream] = useState(null);
+  const [streamUrl, setStreamUrl] = useState("");
+  const [streamError, setStreamError] = useState("");
+  const [streamName, setStreamName] = useState("");
+  const [streamDescription, setStreamDescription] = useState("");
+  const [nftRequired, setNftRequired] = useState(true);
+  const [streamViewers, setStreamViewers] = useState({});
 
   // Web3 Setup
   useEffect(() => {
