@@ -623,7 +623,7 @@ const App = () => {
                 </span>
               </h2>
               
-              <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+              <p className="text-lg md:text-xl text-gray-300 mb-6 md:mb-8 max-w-2xl mx-auto px-4">
                 Die ultimative Web3-Plattform mit gamifizierten Creator-Ökosystem! Spiele "Jagd auf den Bitcoin", 
                 stake MURAT Token, streame live und generiere AI-Content. Alles mit NFT-Integration!
               </p>
