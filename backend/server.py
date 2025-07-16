@@ -234,7 +234,7 @@ async def connect_wallet(wallet_data: WalletConnect):
     """Connect wallet and store session"""
     try:
         # Validate wallet address
-        if not Web3.isAddress(wallet_data.wallet_address):
+        if not Web3.is_address(wallet_data.wallet_address):
             raise HTTPException(status_code=400, detail="Invalid wallet address")
         
         # Store wallet connection
