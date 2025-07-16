@@ -1323,8 +1323,102 @@ const App = () => {
           </div>
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="bg-black/40 backdrop-blur-lg border-t border-purple-500/20 mt-8">
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Brand */}
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                  <span className="text-lg font-bold text-black">₿</span>
+                </div>
+                <span className="text-white font-bold text-lg">KryptoMurat</span>
+              </div>
+              <p className="text-gray-400 text-sm">
+                Die ultimative Web3-Plattform für das "Jagd auf den Bitcoin" Abenteuer.
+              </p>
+            </div>
+
+            {/* Navigation */}
+            <div>
+              <h4 className="text-white font-semibold mb-4">Navigation</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#dashboard" className="text-gray-400 hover:text-white transition-colors">Dashboard</a></li>
+                <li><a href="#story" className="text-gray-400 hover:text-white transition-colors">Bitcoin-Jagd</a></li>
+                <li><a href="#staking" className="text-gray-400 hover:text-white transition-colors">Staking</a></li>
+                <li><a href="#streaming" className="text-gray-400 hover:text-white transition-colors">Live Streaming</a></li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h4 className="text-white font-semibold mb-4">Rechtliches</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link to="/impressum" className="text-gray-400 hover:text-white transition-colors">Impressum</Link></li>
+                <li><Link to="/agb" className="text-gray-400 hover:text-white transition-colors">AGB</Link></li>
+                <li><Link to="/datenschutz" className="text-gray-400 hover:text-white transition-colors">Datenschutz</Link></li>
+                <li><Link to="/nutzungsbedingungen" className="text-gray-400 hover:text-white transition-colors">Nutzungsbedingungen</Link></li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h4 className="text-white font-semibold mb-4">Kontakt</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="mailto:cashkeskin@gmail.com" className="text-gray-400 hover:text-white transition-colors">
+                    📧 cashkeskin@gmail.com
+                  </a>
+                </li>
+                <li>
+                  <a href="https://t.me/moneyclitch" className="text-gray-400 hover:text-white transition-colors">
+                    💬 @moneyclitch
+                  </a>
+                </li>
+                <li>
+                  <span className="text-gray-400">📍 Herford, Deutschland</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-purple-500/20 mt-8 pt-6">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <p className="text-gray-400 text-sm mb-4 md:mb-0">
+                © {new Date().getFullYear()} KryptoMurat by Murat Keskin. Alle Rechte vorbehalten.
+              </p>
+              <div className="flex space-x-4">
+                <a href="https://polygon.technology/" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Powered by Polygon
+                </a>
+                <span className="text-gray-600">|</span>
+                <a href="https://ipfs.io/" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  IPFS Storage
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
+
+// Main App with Router
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainApp />} />
+        <Route path="/impressum" element={<Impressum />} />
+        <Route path="/agb" element={<AGB />} />
+        <Route path="/datenschutz" element={<Datenschutz />} />
+        <Route path="/nutzungsbedingungen" element={<Nutzungsbedingungen />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
 
 export default App;
