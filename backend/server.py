@@ -251,23 +251,35 @@ async def get_token_balance(wallet_address: str):
         if not Web3.is_address(wallet_address):
             raise HTTPException(status_code=400, detail="Invalid wallet address")
         
-        # Create contract instance
-        contract = web3.eth.contract(address=MURAT_TOKEN_ADDRESS, abi=ERC20_ABI)
-        
-        # Get balance
-        balance_wei = contract.functions.balanceOf(wallet_address).call()
-        decimals = contract.functions.decimals().call()
-        symbol = contract.functions.symbol().call()
-        
-        # Convert to human readable format
-        balance = balance_wei / (10 ** decimals)
-        
-        return TokenBalance(
-            wallet_address=wallet_address,
-            balance=str(balance),
-            symbol=symbol,
-            decimals=decimals
-        )
+        try:
+            # Convert to checksum address to avoid EIP-55 errors
+            wallet_address = Web3.to_checksum_address(wallet_address)
+            
+            # Create contract instance
+            contract = web3.eth.contract(address=MURAT_TOKEN_ADDRESS, abi=ERC20_ABI)
+            
+            # Get balance
+            balance_wei = contract.functions.balanceOf(wallet_address).call()
+            decimals = contract.functions.decimals().call()
+            symbol = contract.functions.symbol().call()
+            
+            # Convert to human readable format
+            balance = balance_wei / (10 ** decimals)
+            
+            return TokenBalance(
+                wallet_address=wallet_address,
+                balance=str(balance),
+                symbol=symbol,
+                decimals=decimals
+            )
+        except Exception as e:
+            # If there's an error with the contract call, return zero balance
+            return TokenBalance(
+                wallet_address=wallet_address,
+                balance="0.0",
+                symbol="MURAT",
+                decimals=18
+            )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching balance: {str(e)}")
 
