@@ -338,7 +338,18 @@ async def check_nft_access(wallet_address: str):
     try:
         # Mock NFT check - in production, would check actual NFT contract
         # For MVP, we'll simulate access based on wallet having some ETH/MATIC
-        balance = web3.eth.get_balance(wallet_address)
+        try:
+            # Convert to checksum address to avoid EIP-55 errors
+            wallet_address = Web3.to_checksum_address(wallet_address)
+            balance = web3.eth.get_balance(wallet_address)
+        except Exception as e:
+            # If address conversion fails, assume no access
+            return NFTAccess(
+                wallet_address=wallet_address,
+                has_access=False,
+                nft_count=0,
+                access_level="none"
+            )
         
         if balance > 0:
             access_level = "premium" if balance > web3.toWei(1, 'ether') else "basic"
