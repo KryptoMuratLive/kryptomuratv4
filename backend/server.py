@@ -981,7 +981,7 @@ Stil: Action-reich, deutsch, Bitcoin-Jäger auf Motorrad, Herford-Umgebung, span
 # Original routes
 @api_router.get("/")
 async def root():
-    return {"message": "Jagd auf den Bitcoin - Web3 Platform API"}
+    return {"message": "KryptoMurat - Web3 Platform API"}
 
 # Include the router in the main app
 app.include_router(api_router)
