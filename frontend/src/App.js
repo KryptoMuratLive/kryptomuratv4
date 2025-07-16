@@ -616,7 +616,7 @@ const App = () => {
           /* Mobile-Optimized Landing Page */
           <div className="text-center py-10 md:py-20">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-5xl font-bold text-white mb-6 leading-tight">
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-6 leading-tight">
                 Willkommen bei<br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
                   KryptoMurat
