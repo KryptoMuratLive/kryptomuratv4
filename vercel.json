@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "nextjs-app/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "nextjs-app/$1"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "DB_NAME": "@db_name",
+    "OPENAI_API_KEY": "@openai_api_key",
+    "LIVEPEER_API_KEY": "@livepeer_api_key",
+    "TELEGRAM_TOKEN": "@telegram_token",
+    "POLYGON_RPC_URL": "@polygon_rpc_url",
+    "MURAT_TOKEN_ADDRESS": "@murat_token_address",
+    "LIVEPEER_BASE_URL": "@livepeer_base_url",
+    "WEBHOOK_SECRET": "@webhook_secret"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_BACKEND_URL": "https://kryptomurat.vercel.app",
+      "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID": "4d6552f8a5d85b900455fb644bab328e",
+      "NEXT_PUBLIC_POLYGON_CHAIN_ID": "137"
+    }
+  }
+}
