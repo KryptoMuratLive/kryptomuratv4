@@ -1,0 +1,21 @@
+{
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_BACKEND_URL": "$VERCEL_URL",
+      "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID": "4d6552f8a5d85b900455fb644bab328e",
+      "NEXT_PUBLIC_POLYGON_CHAIN_ID": "137"
+    }
+  },
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    }
+  ]
+}
