@@ -28,7 +28,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [tokenBalance, setTokenBalance] = useState('0');
   const [stakingPositions, setStakingPositions] = useState<StakingPosition[]>([]);
-  const [nftAccess, setNftAccess] = useState<NFTAccess | null>(null);
+  const [nftAccess, setNftAccess] = useState<NFTAccessType | null>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
