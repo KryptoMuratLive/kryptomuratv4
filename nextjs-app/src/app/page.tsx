@@ -6,13 +6,13 @@ import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers/rea
 import { BrowserProvider } from 'ethers';
 import axios from 'axios';
 import { formatAddress, formatBalance, getAPYForDuration } from '@/lib/utils';
-import { WalletData, StakingPosition, NFTAccess } from '@/types';
+import { WalletData, StakingPosition, NFTAccess as NFTAccessType } from '@/types';
 import Dashboard from '@/components/Dashboard';
 import StoryGame from '@/components/StoryGame';
 import StakingPanel from '@/components/StakingPanel';
 import StreamingPanel from '@/components/StreamingPanel';
 import AICreator from '@/components/AICreator';
-import NFTAccess from '@/components/NFTAccess';
+import NFTAccessPanel from '@/components/NFTAccess';
 import MobileNavigation from '@/components/MobileNavigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
