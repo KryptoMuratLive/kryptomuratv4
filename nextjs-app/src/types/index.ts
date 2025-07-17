@@ -96,7 +96,7 @@ export type TelegramSubscription = z.infer<typeof TelegramSubscriptionSchema>;
 export type AIContent = z.infer<typeof AIContentSchema>;
 
 // API Response Types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
