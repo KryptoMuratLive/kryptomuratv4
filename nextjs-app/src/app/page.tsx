@@ -293,7 +293,7 @@ export default function Home() {
             )}
 
             {activeTab === 'nft' && (
-              <NFTAccess 
+              <NFTAccessPanel 
                 nftAccess={nftAccess}
               />
             )}
