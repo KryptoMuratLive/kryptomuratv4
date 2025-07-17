@@ -16,7 +16,7 @@ export default function Footer() {
               <span className="text-white font-bold text-lg">KryptoMurat</span>
             </div>
             <p className="text-gray-400 text-sm">
-              Die ultimative Web3-Plattform für das "Jagd auf den Bitcoin" Abenteuer.
+              Die ultimative Web3-Plattform für das &quot;Jagd auf den Bitcoin&quot; Abenteuer.
             </p>
           </div>
 
